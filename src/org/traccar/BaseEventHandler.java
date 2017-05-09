@@ -16,6 +16,8 @@
 package org.traccar;
 
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.traccar.model.Event;
 import org.traccar.model.Position;
@@ -28,6 +30,7 @@ public abstract class BaseEventHandler extends BaseDataHandler {
         Collection<Event> events = analyzePosition(position);
         if (events != null && Context.getNotificationManager() != null) {
             Context.getNotificationManager().updateEvents(events, position);
+            
         }
         return position;
     }
