@@ -19,22 +19,70 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.traccar.kafka.SensorReading;
+import org.traccar.kafka.StringProducer;
 import org.traccar.model.Event;
 import org.traccar.model.Position;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.traccar.kafka.serialization.JacksonReadingSerializer;
+import org.traccar.kafka.serialization.StringReadingSerializer;
+import java.util.Properties;
 
 public abstract class BaseEventHandler extends BaseDataHandler {
 
+    Producer<String, String> producer;
+    Properties properties = new Properties();
+
+    public BaseEventHandler(){
+        producer = new KafkaProducer<>(properties);
+
+    }
     @Override
     protected Position handlePosition(Position position) {
+
+        System.out.println("In base event handler");
+
+        String serializer;
+        serializer = StringReadingSerializer.class.getName();
+
+
+
+        properties.put("acks", "all");
+        properties.put("retries", 0);
+        properties.put("batch.size", 16384);
+        properties.put("linger.ms", 1);
+        properties.put("buffer.memory", 33554432);
+        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("value.serializer", serializer);
 
         Collection<Event> events = analyzePosition(position);
         if (events != null && Context.getNotificationManager() != null) {
             Context.getNotificationManager().updateEvents(events, position);
-            
+            System.out.println("size of event:"+events.size());
+
+
+            for(Event event: events)
+            {
+                System.out.println(event);
+                System.out.println(event.getType());
+                System.out.println(event.getDeviceId());
+
+
+                    producer.send(new ProducerRecord<>("testDevice1", "01", "location12"));
+                    //Thread.sleep(500);
+
+            }
         }
         return position;
     }
-
     protected abstract Collection<Event> analyzePosition(Position position);
-
 }

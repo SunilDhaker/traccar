@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package org.traccar.events;
-
 import java.util.Collection;
 import java.util.Collections;
 

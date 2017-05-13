@@ -1,5 +1,4 @@
 package org.traccar.kafka.serialization;
-
 import org.traccar.kafka.Sensor;
 import org.traccar.kafka.SensorReading;
 import org.apache.kafka.common.serialization.Deserializer;
