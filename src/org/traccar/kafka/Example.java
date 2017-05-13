@@ -39,7 +39,7 @@ public class Example {
 
         switch(argv[1]) {
             case "string":
-                serializer = StringReadingSerializer.class.getName();break;
+                serializer = "org.apache.kafka.common.serialization.StringSerializer";//StringReadingSerializer.class.getName();break;
             case "json":
                 serializer = JacksonReadingSerializer.class.getName();break;
             case "smile":

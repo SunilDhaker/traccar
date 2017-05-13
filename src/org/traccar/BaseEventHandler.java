@@ -16,6 +16,7 @@
 package org.traccar;
 
 import java.util.Collection;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,14 +36,23 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.traccar.kafka.serialization.JacksonReadingSerializer;
 import org.traccar.kafka.serialization.StringReadingSerializer;
-import java.util.Properties;
 
 public abstract class BaseEventHandler extends BaseDataHandler {
 
     Producer<String, String> producer;
-    Properties properties = new Properties();
+
 
     public BaseEventHandler(){
+        String  serializer2 = StringReadingSerializer.class.getName();
+        Properties properties = new Properties();
+        properties.put("acks", "all");
+        properties.put("retries", 0);
+        properties.put("batch.size", 16384);
+        properties.put("linger.ms", 1);
+        properties.put("buffer.memory", 33554432);
+        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("bootstrap.servers", "localhost:9092");
         producer = new KafkaProducer<>(properties);
 
     }
@@ -51,18 +61,11 @@ public abstract class BaseEventHandler extends BaseDataHandler {
 
         System.out.println("In base event handler");
 
-        String serializer;
-        serializer = StringReadingSerializer.class.getName();
 
 
 
-        properties.put("acks", "all");
-        properties.put("retries", 0);
-        properties.put("batch.size", 16384);
-        properties.put("linger.ms", 1);
-        properties.put("buffer.memory", 33554432);
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", serializer);
+
+
 
         Collection<Event> events = analyzePosition(position);
         if (events != null && Context.getNotificationManager() != null) {
@@ -77,7 +80,7 @@ public abstract class BaseEventHandler extends BaseDataHandler {
                 System.out.println(event.getDeviceId());
 
 
-                    producer.send(new ProducerRecord<>("testDevice1", "01", "location12"));
+                    producer.send(new ProducerRecord<>("testDevice2", "01", "location12"));
                     //Thread.sleep(500);
 
             }
