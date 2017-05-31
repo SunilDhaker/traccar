@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 package org.traccar;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+import org.apache.avro.Schema;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -36,6 +39,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.traccar.kafka.serialization.JacksonReadingSerializer;
 import org.traccar.kafka.serialization.StringReadingSerializer;
 
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
 public abstract class BaseEventHandler extends BaseDataHandler {
 
     Producer<String, String> producer;
@@ -52,10 +57,11 @@ public abstract class BaseEventHandler extends BaseDataHandler {
         properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.put("bootstrap.servers", "localhost:9092");
+        properties.put("schema.registry.url", "http://localhost:8081");
         producer = new KafkaProducer<>(properties);
     }
     @Override
-    protected Position handlePosition(Position position) {
+    protected Position handlePosition(Position position) throws IOException {
 
         System.out.println("In base event handler");
 
@@ -71,6 +77,20 @@ public abstract class BaseEventHandler extends BaseDataHandler {
                 System.out.println(event.getType());
                 System.out.println(event.getDeviceId());
 
+                Schema.Parser parser = new Schema.Parser();
+                Schema schema = new Schema.Parser().parse(new File("D:\\Projects\\traccar-java\\traccar\\src\\org\\traccar\\kafka\\avro\\deviceMovement.avsc"));
+//               schema.getT
+                GenericRecord g = new GenericData.Record(schema);
+
+                GenericRecord t = new GenericData.Record(schema.getField("position").schema());
+                t.put("latitude","22.265899");
+                t.put("longitude","27.123132");
+                t.put("accuracy","1.02145");
+                t.put("network","full");
+                t.put("ignition",true);
+
+                GenericRecord g = new GenericData.Record(schema);
+//                g.put
                     producer.send(new ProducerRecord<>("testDevice2", "01", event.getType()));
 
                 switch (event.getType()) {

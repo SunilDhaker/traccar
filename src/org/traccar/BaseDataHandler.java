@@ -20,6 +20,8 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 import org.traccar.model.Position;
 
+import java.io.IOException;
+
 public abstract class BaseDataHandler extends OneToOneDecoder {
 
     @Override
@@ -32,6 +34,6 @@ public abstract class BaseDataHandler extends OneToOneDecoder {
         return msg;
     }
 
-    protected abstract Position handlePosition(Position position);
+    protected abstract Position handlePosition(Position position) throws IOException;
 
 }

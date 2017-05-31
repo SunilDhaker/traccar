@@ -1,0 +1,35 @@
+{
+"namespace": "src.org.traccar",
+ "type": "record",
+ "name": "position",
+ "fields": [
+     {"name": "latitude", "type": "string"},
+     {"name": "longitude",  "type": "string"},
+     {"name": "accuracy", "type": ["string", "null"]},
+     {"name": "network", "type": ["string", "null"]},
+     {"name": "ignition", "type":"boolean"}
+ ]
+},
+{
+"namespace": "src.org.traccar",
+ "type": "record",
+ "name": "data",
+ "fields": [
+     {"name": "device_id", "type": "string"},
+     {"name": "data",
+     "type": {
+           "type": "record",
+           "items": "src.org.traccar.position"
+     }
+     }
+   ]
+},
+{
+"namespace": "src.org.traccar",
+ "type": "record",
+ "name": "stopped.event",
+ "fields": [
+     {"name": "device_id", "type": "string"},
+     {"name": "position",  "type": ["record", "null"]}
+   ]
+}

@@ -21,6 +21,8 @@ public class IgnitionEventHandlerTest extends BaseTest {
         position.setValid(true);
         Collection<Event> events = ignitionEventHandler.analyzePosition(position);
         assertEquals(events, null);
+
+
     }
 
 }
