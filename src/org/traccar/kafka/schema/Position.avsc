@@ -1,0 +1,14 @@
+{"namespace": "org.traccar.kafka.schema",
+  "type": "record",
+  "name": "Position",
+  "fields": [
+    {"name": "id", "type": "string"},
+    {"name": "timestamp",  "type": "long"},
+    {"name": "latitude",  "type": "string"},
+    {"name": "longitude",  "type": "string"},
+    {"name": "speed",  "type": "string"},
+    {"name": "accuracy",  "type": ["null","int"], "default": null}
+  ]
+}
+
+

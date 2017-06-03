@@ -1,21 +1,7 @@
 package org.traccar.kafka.avro;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-
-import org.apache.avro.file.DataFileWriter;
-import org.apache.avro.io.DatumWriter;
-import org.apache.avro.specific.SpecificDatumWriter;
 
 
 public class ExampleAvro {
@@ -23,6 +9,7 @@ public class ExampleAvro {
     private static final Random RANDOM = new Random();
 
     public static void main(String... argv) throws Exception {
+
 
         if(argv.length < 3) {
             System.out.println("Usage: java -jar kafka-org.traccar.kafka.serialization-example<version>.jar <consume|produce> <string|json|smile|kryo> <topic> [kafkahost:port]");

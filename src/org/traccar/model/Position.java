@@ -283,4 +283,10 @@ public class Position extends Message {
         this.network = network;
     }
 
+
+    public org.traccar.kafka.schema.Position toSchema(){
+       return  new org.traccar.kafka.schema.Position();
+
+    }
+
 }

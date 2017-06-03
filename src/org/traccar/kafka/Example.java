@@ -1,4 +1,5 @@
 package org.traccar.kafka;
+import javafx.geometry.Pos;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -7,6 +8,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.traccar.kafka.serialization.JacksonReadingSerializer;
 import org.traccar.kafka.serialization.StringReadingSerializer;
+import org.traccar.model.Position;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -17,6 +19,10 @@ import java.util.Random;
 public class Example {
     private static final Random RANDOM = new Random();
 
+
+
+
+      org.traccar.kafka.schema.Position p = org.traccar.kafka.schema.Position.newBuilder().setLongitude("9044").build();
     public static void main(String... argv) throws Exception {
         if(argv.length < 3) {
             System.out.println("Usage: java -jar kafka-org.traccar.kafka.serialization-example<version>.jar <consume|produce> <string|json|smile|kryo> <topic> [kafkahost:port]");
@@ -54,7 +60,7 @@ public class Example {
             runProducer(properties, argv[2]);
         }
         else {
-            properties.put("value.deserializer", serializer);
+            properties.put("value.deserializer", Position.class.getName());
             runConsumer(properties, argv[2]);
         }
 
@@ -66,15 +72,16 @@ public class Example {
         properties.put("auto.commit.interval.ms", "1000");
         properties.put("session.timeout.ms", "30000");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put("value.deserializer", "org.traccar.kafka.serialization.PositionSerializer");
 
         System.out.printf("Running consumer with serializer %s on topic %s\n", properties.getProperty("value.deserializer"), topic);
 
-        KafkaConsumer<String, SensorReading> consumer = new KafkaConsumer<>(properties);
+        KafkaConsumer<String, Position> consumer = new KafkaConsumer<>(properties);
         consumer.subscribe(Arrays.asList( topic));
         while (true) {
-            ConsumerRecords<String , SensorReading> records = consumer.poll(100);
-            for (ConsumerRecord<String, SensorReading> record : records)
-                System.out.printf("offset = %d, key = %s, value = %s\n", record.offset(), record.key(), record.value());
+            ConsumerRecords<String , Position> records = consumer.poll(100);
+            for (ConsumerRecord<String, Position> record : records)
+                System.out.printf("offset = %d, key = %s, value = %s\n", record.offset(), record.key(), record.value().getLatitude());
         }
     }
 
@@ -84,7 +91,8 @@ public class Example {
         properties.put("batch.size", 16384);
         properties.put("linger.ms", 1);
         properties.put("buffer.memory", 33554432);
-       properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("schema.registry.url", "http://35.185.162.205:8081");
 
         System.out.printf("Running producer with serializer %s on topic %s\n", properties.getProperty("value.serializer"), topic);
 
@@ -94,6 +102,7 @@ public class Example {
             producer.send(new ProducerRecord<>(topic, Integer.toString(i), randomReading()));
             //Thread.sleep(500);
         }
+
 
         producer.close();
     }

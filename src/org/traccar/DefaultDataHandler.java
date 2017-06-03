@@ -15,16 +15,40 @@
  */
 package org.traccar;
 
+import javafx.geometry.Pos;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.traccar.helper.Log;
 import org.traccar.model.Position;
 
+import java.util.Properties;
+
 public class DefaultDataHandler extends BaseDataHandler {
+
+    Producer<String , Position> producer ;
+    DefaultDataHandler() {
+        Properties properties = new Properties();
+        properties.put("acks", "all");
+        properties.put("retries", 0);
+        properties.put("batch.size", 16384);
+        properties.put("linger.ms", 1);
+        properties.put("buffer.memory", 33554432);
+        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("value.serializer", "org.traccar.kafka.serialization.PositionSerializer");
+        properties.put("bootstrap.servers", "35.185.162.205:9092");
+
+
+        producer = new KafkaProducer<>(properties);
+    }
 
     @Override
     protected Position handlePosition(Position position) {
 
+
         try {
             Context.getDataManager().addPosition(position);
+            producer.send(new ProducerRecord<>("positionsTopic", "01", position));
         } catch (Exception error) {
             Log.warning(error);
         }
