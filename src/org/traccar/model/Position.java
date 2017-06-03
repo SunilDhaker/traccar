@@ -15,6 +15,9 @@
  */
 package org.traccar.model;
 
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+
 import java.util.Date;
 
 public class Position extends Message {
@@ -284,9 +287,27 @@ public class Position extends Message {
     }
 
 
-    public org.traccar.kafka.schema.Position toSchema(){
-       return  new org.traccar.kafka.schema.Position();
+//    public org.traccar.kafka.schema.Position toSchema(){
+//       return  new org.traccar.kafka.schema.Position();
+//
+//    }
+//
+//    public GenericRecord toAvro(String schemaType){
+//        String path = getPathForSchema(schemaType);
+//        // path will be of schema
+//        GenericRecord g = new GenericData.Record("/path");
+//        g.put("latitude");
+//        putValuesInRecord(g,schemaType);
+//    }
 
-    }
 
+//    void putValuesInRecord(GenericRecord record,String schemaType){
+//            switch (schemaType){
+//
+//            }
+//    }
+//
+//    public  String getPathForSchema(String schemaType){
+//
+//    }
 }

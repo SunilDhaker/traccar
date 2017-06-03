@@ -25,12 +25,13 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.traccar.kafka.SensorReading;
 import org.traccar.kafka.StringProducer;
-import org.traccar.kafka.serialization.PositionSerializer;
 import org.traccar.model.Event;
 import org.traccar.model.Position;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.traccar.kafka.serialization.JacksonReadingSerializer;
 import org.traccar.kafka.serialization.StringReadingSerializer;
@@ -38,44 +39,41 @@ import org.traccar.kafka.serialization.StringReadingSerializer;
 public abstract class BaseEventHandler extends BaseDataHandler {
 
     Producer<String, String> producer;
-    Producer<String, String> producer2;
 
 
     public BaseEventHandler(){
-
-        String  serializer2 = PositionSerializer.class.getName();
-        Properties properties = new Properties();
-        properties.put("acks", "all");
-        properties.put("retries", 0);
-        properties.put("batch.size", 16384);
-        properties.put("linger.ms", 1);
-        properties.put("buffer.memory", 33554432);
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("bootstrap.servers", "localhost:9092");
-
-
-       // producer = new KafkaProducer<>(properties);
-       // producer2 = new KafkaProducer<>(properties1);
+//        String  serializer2 = StringReadingSerializer.class.getName();
+//        Properties properties = new Properties();
+//        properties.put("acks", "all");
+//        properties.put("retries", 0);
+//        properties.put("batch.size", 16384);
+//        properties.put("linger.ms", 1);
+//        properties.put("buffer.memory", 33554432);
+//        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+//        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+//        properties.put("bootstrap.servers", "localhost:9092");
+//        producer = new KafkaProducer<>(properties);
     }
     @Override
     protected Position handlePosition(Position position) {
 
-        System.out.println("In base event handler");
-
-        Collection<Event> events = analyzePosition(position);
-        if (events != null && Context.getNotificationManager() != null) {
-            Context.getNotificationManager().updateEvents(events, position);
-            System.out.println("size of event:"+events.size());
-
-
-            for(Event event: events)
-            {
-                System.out.println(event);
-                System.out.println(event.getType());
-                System.out.println(event.getDeviceId());
-
-                switch (event.getType()) {
+//        System.out.println("In base event handler");
+//
+//       Collection<Event> events = analyzePosition(position);
+//        if (events != null && Context.getNotificationManager() != null) {
+//            Context.getNotificationManager().updateEvents(events, position);
+//            System.out.println("size of event:"+events.size());
+//
+//
+//            for(Event event: events)
+//            {
+//                System.out.println(event);
+//                System.out.println(event.getType());
+//                System.out.println(event.getDeviceId());
+//
+//                    producer.send(new ProducerRecord<>("testDevice2", "01", event.getType()));
+//
+//                switch (event.getType()) {
 //                    case "deviceOnline":
 //                        producer.send(new ProducerRecord<>("deviceStateTopic", "01", "deviceOnline"));
 //                        break;
@@ -103,12 +101,12 @@ public abstract class BaseEventHandler extends BaseDataHandler {
 //                    case "geofenceExit":
 //                        producer.send(new ProducerRecord<>("deviceGeofenceTopic", "02", "geofenceExit"));
 //                        break;
-                    default: System.out.println("Unknown Event");
-                        break;
-                }
-                //Thread.sleep(500);
-            }
-        }
+//                    default: System.out.println("Unknown Event");
+//                        break;
+//                }
+//                    //Thread.sleep(500);
+//            }
+//        }
         return position;
     }
     protected abstract Collection<Event> analyzePosition(Position position);

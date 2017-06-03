@@ -81,13 +81,13 @@ public class JacksonReadingSerializer implements Closeable, AutoCloseable, Seria
         public long time;
         public double value;
 
-        public static SerializationHelper from(SensorReading reading) {
+        public static SerializationHelper from(SensorReading reading)
+        {
             SerializationHelper helper = new SerializationHelper();
             helper.id = reading.getSensor().getId();
             helper.type = reading.getSensor().getType();
             helper.time = reading.getTime();
             helper.value = reading.getValue();
-
             return helper;
         }
 
