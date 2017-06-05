@@ -75,7 +75,7 @@ public abstract class BaseEventHandler extends BaseDataHandler {
 
                 switch (event.getType()) {
                     case "deviceOnline":
-                        producer.send(new ProducerRecord<>("deviceStateTopic", "01", "deviceOnline"));
+                        producer.send(new ProducerRecord<>("deviceStateTopic", position.getDeviceId(), position.getDeviceId()));
                         break;
                     case "deviceOffline":
                         producer.send(new ProducerRecord<>("deviceStateTopic", "02", "deviceOffline"));

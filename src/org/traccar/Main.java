@@ -16,6 +16,7 @@
 package org.traccar;
 
 import org.traccar.helper.Log;
+import org.traccar.kafka.VTSConsumersThread;
 
 import java.sql.SQLException;
 import java.util.Timer;
@@ -51,17 +52,23 @@ public final class Main {
             }
         }, 0, CLEAN_PERIOD);
 
+
+        VTSConsumersThread vtsConsumersThread = new VTSConsumersThread();
+       vtsConsumersThread.start();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 Log.info("Shutting down server...");
-
+                vtsConsumersThread.stop();
                 if (Context.getWebServer() != null) {
                     Context.getWebServer().stop();
                 }
                 Context.getServerManager().stop();
             }
         });
+
+
+
     }
 
 }
