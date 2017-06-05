@@ -75,31 +75,31 @@ public abstract class BaseEventHandler extends BaseDataHandler {
 
                 switch (event.getType()) {
                     case "deviceOnline":
-                        producer.send(new ProducerRecord<>("deviceStateTopic", position.getDeviceId(), position.getDeviceId()));
+                        producer.send(new ProducerRecord<>("deviceStateTopic", "" +  position.getDeviceId(), "deviceOnline"));
                         break;
                     case "deviceOffline":
-                        producer.send(new ProducerRecord<>("deviceStateTopic", "02", "deviceOffline"));
+                        producer.send(new ProducerRecord<>("deviceStateTopic", "" + position.getDeviceId(), "deviceOffline"));
                         break;
                     case "ignitionOn":
-                        producer.send(new ProducerRecord<>("deviceStateTopic", "03", "ignitionOn"));
+                        producer.send(new ProducerRecord<>("deviceStateTopic","" +  position.getDeviceId(), "ignitionOn"));
                         break;
                     case "ignitionOff":
-                        producer.send(new ProducerRecord<>("deviceStateTopic", "04", "ignitionOff"));
+                        producer.send(new ProducerRecord<>("deviceStateTopic", "" + position.getDeviceId(), "ignitionOff"));
                         break;
                     case "deviceStopped":
-                        producer.send(new ProducerRecord<>("deviceMovementTopic", "01", "deviceStopped"));
+                        producer.send(new ProducerRecord<>("deviceMovementTopic","" +  position.getDeviceId(), "deviceStopped"));
                         break;
                     case "deviceMoving":
-                        producer.send(new ProducerRecord<>("deviceMovementTopic", "02", "deviceMoving"));
+                        producer.send(new ProducerRecord<>("deviceMovementTopic","" +  position.getDeviceId(), "deviceMoving"));
                         break;
                     case "deviceOverspeed":
-                        producer.send(new ProducerRecord<>("deviceMovementTopic", "03", "deviceOverspeed"));
+                        producer.send(new ProducerRecord<>("deviceMovementTopic", "" + position.getDeviceId(), "deviceOverspeed"));
                         break;
                     case "geofenceEnter":
-                        producer.send(new ProducerRecord<>("deviceGeofenceTopic", "01", "geofenceEnter"));
+                        producer.send(new ProducerRecord<>("deviceGeofenceTopic", "" + position.getDeviceId(), "geofenceEnter"));
                         break;
                     case "geofenceExit":
-                        producer.send(new ProducerRecord<>("deviceGeofenceTopic", "02", "geofenceExit"));
+                        producer.send(new ProducerRecord<>("deviceGeofenceTopic","" +  position.getDeviceId(), "geofenceExit"));
                         break;
                     default: System.out.println("Unknown Event");
                         break;
