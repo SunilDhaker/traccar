@@ -92,7 +92,7 @@ public class Example {
         properties.put("linger.ms", 1);
         properties.put("buffer.memory", 33554432);
         properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("schema.registry.url", "http://35.185.162.205:8081");
+        properties.put("schema.registry.url", "http://localhost:8081");
 
         System.out.printf("Running producer with serializer %s on topic %s\n", properties.getProperty("value.serializer"), topic);
 

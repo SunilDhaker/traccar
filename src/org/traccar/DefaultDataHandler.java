@@ -26,20 +26,23 @@ import java.util.Properties;
 
 public class DefaultDataHandler extends BaseDataHandler {
 
-    Producer<String , Position> producer ;
+    public static Producer<String , Position> producer ;
     DefaultDataHandler() {
-        Properties properties = new Properties();
-        properties.put("acks", "all");
-        properties.put("retries", 0);
-        properties.put("batch.size", 16384);
-        properties.put("linger.ms", 1);
-        properties.put("buffer.memory", 33554432);
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.traccar.kafka.serialization.PositionSerializer");
-        properties.put("bootstrap.servers", "35.185.162.205:9092");
+
+        if(producer == null) {
+            Properties properties = new Properties();
+            properties.put("acks", "all");
+            properties.put("retries", 0);
+            properties.put("batch.size", 16384);
+            properties.put("linger.ms", 1);
+            properties.put("buffer.memory", 33554432);
+            properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+            properties.put("value.serializer", "org.traccar.kafka.serialization.PositionSerializer");
+            properties.put("bootstrap.servers", "localhost:9092");
 
 
-        producer = new KafkaProducer<>(properties);
+            producer = new KafkaProducer<>(properties);
+        }
     }
 
     @Override

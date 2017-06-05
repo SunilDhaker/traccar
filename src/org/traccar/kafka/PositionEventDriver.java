@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public class PositionEventDriver {
 
     public static void main(final String[] args) throws Exception {
-        final String bootstrapServers = args.length > 0 ? args[0] : "35.185.162.205:9092";
+        final String bootstrapServers = args.length > 0 ? args[0] : "localhost:9092";
         final Properties streamsConfiguration = new Properties();
         // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
         // against which the application is run.
@@ -66,7 +66,7 @@ public class PositionEventDriver {
         // call to `stream()` below in order to show how that's done, too.
         final KStream<String, Position> positionStream = builder.stream(stringSerde, positionSerde, "positionsTopic");
 
-        positionStream.map((key , value) -> {return  new KeyValue<String , Position>("" + value.getDeviceId() , value) ;})
+        KTable<String , VehicleAggrigate>  kt  = positionStream.map((key , value) -> {return  new KeyValue<String , Position>("" + value.getDeviceId() , value) ;})
                 .groupByKey(stringSerde , positionSerde)
                 .aggregate(VehicleAggrigate::new,
                         (aggKey, value, aggregate) -> {
@@ -75,8 +75,12 @@ public class PositionEventDriver {
                         },
                         new VehicleAggrigateSerde(),
                         "xyz"
-                ).print();
+                );
 
+                kt.print();
+
+
+                kt.toStream().print();
 
 
 
@@ -160,18 +164,20 @@ public class PositionEventDriver {
                 public VehicleAggrigate deserialize(String s, byte[] bytes) {
 
                     VehicleAggrigate va = new VehicleAggrigate();
-                    final DataInputStream dataInputStream =  new DataInputStream(new ByteArrayInputStream(bytes));
+                    if (bytes != null){
+                        final DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(bytes));
                     try {
 
                         va.totalDistance = dataInputStream.readInt();
                         Position lp = new Position();
                         lp.setLatitude(dataInputStream.readDouble());
                         lp.setLongitude(dataInputStream.readDouble());
-                        va.lastPosition = lp ;
+                        va.lastPosition = lp;
                         //va.lastPosition = (new PositionSerializer()).deserialize(null , IOUtils.toByteArray(dataInputStream));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                     }
                     return va;
                 }
 
@@ -190,6 +196,10 @@ public class PositionEventDriver {
         public int totalDistance = 0 ;
         public void add(Position positions){
 
+            lastFiveLocations.add(positions);
+            if(lastFiveLocations.size() == 5){
+                lastFiveLocations.remove(4);
+            }
             if(lastPosition == null){
                 lastPosition = positions;
             }
@@ -202,6 +212,12 @@ public class PositionEventDriver {
         @Override
         public String toString() {
             return "\n" + totalDistance;
+        }
+
+
+        @Override
+        public boolean equals(Object obj) {
+            return true;
         }
     }
 

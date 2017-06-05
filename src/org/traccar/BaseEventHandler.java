@@ -38,21 +38,24 @@ import org.traccar.kafka.serialization.StringReadingSerializer;
 
 public abstract class BaseEventHandler extends BaseDataHandler {
 
-    Producer<String, String> producer;
+
+    public static Producer<String, String> producer;
 
 
     public BaseEventHandler(){
-        String  serializer2 = StringReadingSerializer.class.getName();
-        Properties properties = new Properties();
-        properties.put("acks", "all");
-        properties.put("retries", 0);
-        properties.put("batch.size", 16384);
-        properties.put("linger.ms", 1);
-        properties.put("buffer.memory", 33554432);
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("bootstrap.servers", "localhost:9092");
-        producer = new KafkaProducer<>(properties);
+       if(producer == null) {
+           String serializer2 = StringReadingSerializer.class.getName();
+           Properties properties = new Properties();
+           properties.put("acks", "all");
+           properties.put("retries", 0);
+           properties.put("batch.size", 16384);
+           properties.put("linger.ms", 1);
+           properties.put("buffer.memory", 33554432);
+           properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+           properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+           properties.put("bootstrap.servers", "localhost:9092");
+           producer = new KafkaProducer<>(properties);
+       }
     }
     @Override
     protected Position handlePosition(Position position) {
@@ -71,7 +74,6 @@ public abstract class BaseEventHandler extends BaseDataHandler {
                 System.out.println(event.getType());
                 System.out.println(event.getDeviceId());
 
-                    producer.send(new ProducerRecord<>("testDevice2", "01", event.getType()));
 
                 switch (event.getType()) {
                     case "deviceOnline":

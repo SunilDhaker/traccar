@@ -31,15 +31,17 @@ public class VTSConsumersThread extends Thread{
         properties.put("session.timeout.ms", "30000");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("bootstrap.servers", "35.185.162.205:9092");
+        properties.put("bootstrap.servers", "localhost:9092");
 
 
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
         consumer.subscribe(Arrays.asList( "device"));
         while (true) {
+
             ConsumerRecords<String , String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records){
+
 
                 String deviveJsonString = record.value();
                 JsonReader jsonReader = Json.createReader(new StringReader(deviveJsonString));
