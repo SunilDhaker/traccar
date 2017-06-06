@@ -53,7 +53,7 @@ public abstract class BaseEventHandler extends BaseDataHandler {
            properties.put("buffer.memory", 33554432);
            properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
            properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-           properties.put("bootstrap.servers", "localhost:9092");
+           properties.put("bootstrap.servers", "35.185.162.205:9092");
            producer = new KafkaProducer<>(properties);
        }
     }

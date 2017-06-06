@@ -38,7 +38,7 @@ public class DefaultDataHandler extends BaseDataHandler {
             properties.put("buffer.memory", 33554432);
             properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
             properties.put("value.serializer", "org.traccar.kafka.serialization.PositionSerializer");
-            properties.put("bootstrap.servers", "localhost:9092");
+            properties.put("bootstrap.servers", "35.185.162.205:9092");
 
 
             producer = new KafkaProducer<>(properties);
@@ -50,6 +50,7 @@ public class DefaultDataHandler extends BaseDataHandler {
 
 
         try {
+            position.setImei(Context.getIdentityManager().getDeviceById(position.getDeviceId()).getUniqueId());
             Context.getDataManager().addPosition(position);
             producer.send(new ProducerRecord<>("positionsTopic", "01", position));
         } catch (Exception error) {

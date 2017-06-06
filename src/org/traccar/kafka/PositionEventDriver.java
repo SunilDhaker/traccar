@@ -9,10 +9,7 @@ import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.kstream.Initializer;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KStreamBuilder;
-import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.*;
 import org.traccar.helper.DistanceCalculator;
 import org.traccar.kafka.serialization.PositionSerializer;
 import org.traccar.model.Position;
@@ -31,7 +28,7 @@ import java.util.regex.Pattern;
 public class PositionEventDriver {
 
     public static void main(final String[] args) throws Exception {
-        final String bootstrapServers = args.length > 0 ? args[0] : "localhost:9092";
+        final String bootstrapServers = args.length > 0 ? args[0] : "35.185.162.205:9092";
         final Properties streamsConfiguration = new Properties();
         // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
         // against which the application is run.
@@ -69,12 +66,14 @@ public class PositionEventDriver {
         KTable<String , VehicleAggrigate>  kt  = positionStream.map((key , value) -> {return  new KeyValue<String , Position>("" + value.getDeviceId() , value) ;})
                 .groupByKey(stringSerde , positionSerde)
                 .aggregate(VehicleAggrigate::new,
-                        (aggKey, value, aggregate) -> {
+                           (aggKey, value, aggregate) -> {
                             aggregate.add(value);
                             return aggregate;
                         },
-                        new VehicleAggrigateSerde(),
-                        "xyz"
+                      //  TimeWindows.of(5 * 60 * 1000).advanceBy(1 * 60 * 100),
+                      new VehicleAggrigateSerde(),
+
+                "xyz"
                 );
 
                 kt.print();

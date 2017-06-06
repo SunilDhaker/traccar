@@ -28,7 +28,7 @@ public class StringProducer {
         Properties props = new Properties();
 
         //Assign localhost id
-        props.put("bootstrap.servers", "localhost:9092");
+        props.put("bootstrap.servers", "35.185.162.205:9092");
 
         //Set acknowledgements for producer requests.
         props.put("acks", "all");

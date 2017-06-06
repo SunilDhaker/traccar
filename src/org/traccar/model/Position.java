@@ -117,6 +117,15 @@ public class Position extends Message {
     public static final String ALARM_OIL_LEAK = "oilLeak";
     public static final String ALARM_TAMPERING = "tampering";
 
+    public String getImei() {
+        return imei;
+    }
+
+    public void setImei(String imei) {
+        this.imei = imei;
+    }
+
+    public  String imei ;
     private String protocol;
 
     public String getProtocol() {

@@ -18,9 +18,12 @@ package org.traccar;
 public class DeviceSession {
 
     private final long deviceId;
+    private final String imei;
 
-    public DeviceSession(long deviceId) {
+
+    public DeviceSession(long deviceId , String imei) {
         this.deviceId = deviceId;
+        this.imei = imei;
     }
 
     public long getDeviceId() {

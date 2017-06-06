@@ -25,7 +25,7 @@ public class ExampleAvro {
             properties.put("bootstrap.servers", argv[3]);
         }
         else {
-            properties.put("bootstrap.servers", "localhost:9092");
+            properties.put("bootstrap.servers", "35.185.162.205:9092");
         }
 
         System.out.printf("Connecting to Kafka on %s\n", properties.getProperty("bootstrap.servers"));

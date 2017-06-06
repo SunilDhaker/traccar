@@ -31,7 +31,7 @@ public class VTSConsumersThread extends Thread{
         properties.put("session.timeout.ms", "30000");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("bootstrap.servers", "localhost:9092");
+        properties.put("bootstrap.servers", "35.185.162.205:9092");
 
 
 

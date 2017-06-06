@@ -70,8 +70,9 @@ public abstract class BaseProtocolDecoder extends ExtendedObjectDecoder {
     private DeviceSession channelDeviceSession; // connection-based protocols
     private Map<SocketAddress, DeviceSession> addressDeviceSessions = new HashMap<>(); // connectionless protocols
 
-    private long findDeviceId(SocketAddress remoteAddress, String... uniqueIds) {
+    private String findDeviceId(SocketAddress remoteAddress, String... uniqueIds) {
         long deviceId = 0;
+        String imei  = "";
         if (uniqueIds.length > 0) {
             try {
                 for (String uniqueId : uniqueIds) {
@@ -79,6 +80,7 @@ public abstract class BaseProtocolDecoder extends ExtendedObjectDecoder {
                         Device device = Context.getIdentityManager().getDeviceByUniqueId(uniqueId);
                         if (device != null) {
                             deviceId = device.getId();
+                            imei = device.getUniqueId();
                             break;
                         }
                     }
@@ -88,7 +90,7 @@ public abstract class BaseProtocolDecoder extends ExtendedObjectDecoder {
             }
             if (deviceId == 0) {
                 if (Context.getConfig().getBoolean("database.registerUnknown")) {
-                    return addUnknownDevice(uniqueIds[0]);
+                    return   addUnknownDevice(uniqueIds[0]) + "##" + uniqueIds[0];
                 }
 
                 StringBuilder message = new StringBuilder("Unknown device -");
@@ -101,28 +103,32 @@ public abstract class BaseProtocolDecoder extends ExtendedObjectDecoder {
                 Log.warning(message.toString());
             }
         }
-        return deviceId;
+        return deviceId + "##" +imei;
     }
 
     public DeviceSession getDeviceSession(Channel channel, SocketAddress remoteAddress, String... uniqueIds) {
         if (Context.getConfig().getBoolean("decoder.ignoreSessionCache")) {
-            long deviceId = findDeviceId(remoteAddress, uniqueIds);
+            long deviceId = Integer.parseInt(findDeviceId(remoteAddress, uniqueIds).split("##")[0]);
+            String imei = findDeviceId(remoteAddress, uniqueIds).split("##")[0];
+
             if (deviceId != 0) {
                 if (Context.getConnectionManager() != null) {
                     Context.getConnectionManager().addActiveDevice(deviceId, protocol, channel, remoteAddress);
                 }
-                return new DeviceSession(deviceId);
+                return new DeviceSession(deviceId ,imei);
             } else {
                 return null;
             }
         }
         if (channel instanceof DatagramChannel) {
-            long deviceId = findDeviceId(remoteAddress, uniqueIds);
+            long deviceId = Integer.parseInt(findDeviceId(remoteAddress, uniqueIds).split("##")[0]);
+            String imei = findDeviceId(remoteAddress, uniqueIds).split("##")[0];
+
             DeviceSession deviceSession = addressDeviceSessions.get(remoteAddress);
             if (deviceSession != null && (deviceSession.getDeviceId() == deviceId || uniqueIds.length == 0)) {
                 return deviceSession;
             } else if (deviceId != 0) {
-                deviceSession = new DeviceSession(deviceId);
+                deviceSession = new DeviceSession(deviceId , imei);
                 addressDeviceSessions.put(remoteAddress, deviceSession);
                 if (Context.getConnectionManager() != null) {
                     Context.getConnectionManager().addActiveDevice(deviceId, protocol, channel, remoteAddress);
@@ -133,9 +139,10 @@ public abstract class BaseProtocolDecoder extends ExtendedObjectDecoder {
             }
         } else {
             if (channelDeviceSession == null) {
-                long deviceId = findDeviceId(remoteAddress, uniqueIds);
+                long deviceId = Integer.parseInt(findDeviceId(remoteAddress, uniqueIds).split("##")[0]);
+                String imei = findDeviceId(remoteAddress, uniqueIds).split("##")[0];
                 if (deviceId != 0) {
-                    channelDeviceSession = new DeviceSession(deviceId);
+                    channelDeviceSession = new DeviceSession(deviceId , imei);
                     if (Context.getConnectionManager() != null) {
                         Context.getConnectionManager().addActiveDevice(deviceId, protocol, channel, remoteAddress);
                     }
@@ -176,8 +183,7 @@ public abstract class BaseProtocolDecoder extends ExtendedObjectDecoder {
     }
 
     @Override
-    protected void onMessageEvent(
-            Channel channel, SocketAddress remoteAddress, Object originalMessage, Object decodedMessage) {
+    protected void onMessageEvent(Channel channel, SocketAddress remoteAddress, Object originalMessage, Object decodedMessage) {
         if (Context.getStatisticsManager() != null) {
             Context.getStatisticsManager().registerMessageReceived();
         }
@@ -198,8 +204,7 @@ public abstract class BaseProtocolDecoder extends ExtendedObjectDecoder {
         } else {
             DeviceSession deviceSession = getDeviceSession(channel, remoteAddress);
             if (deviceSession != null) {
-                Context.getConnectionManager().updateDevice(
-                        deviceSession.getDeviceId(), Device.STATUS_ONLINE, new Date());
+                Context.getConnectionManager().updateDevice( deviceSession.getDeviceId(), Device.STATUS_ONLINE, new Date());
             }
         }
     }
