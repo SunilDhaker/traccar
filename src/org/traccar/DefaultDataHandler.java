@@ -22,6 +22,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.traccar.helper.Log;
 import org.traccar.model.Position;
 
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.Properties;
 
 public class DefaultDataHandler extends BaseDataHandler {
@@ -30,6 +32,7 @@ public class DefaultDataHandler extends BaseDataHandler {
     DefaultDataHandler() {
 
         if(producer == null) {
+
             Properties properties = new Properties();
             properties.put("acks", "all");
             properties.put("retries", 0);
@@ -38,8 +41,7 @@ public class DefaultDataHandler extends BaseDataHandler {
             properties.put("buffer.memory", 33554432);
             properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
             properties.put("value.serializer", "org.traccar.kafka.serialization.PositionSerializer");
-            properties.put("bootstrap.servers", "35.185.162.205:9092");
-
+            properties.put("bootstrap.servers", Context.getConfig().getString("bootstrap.servers"));
 
             producer = new KafkaProducer<>(properties);
         }
@@ -48,16 +50,20 @@ public class DefaultDataHandler extends BaseDataHandler {
     @Override
     protected Position handlePosition(Position position) {
 
-
         try {
             position.setImei(Context.getIdentityManager().getDeviceById(position.getDeviceId()).getUniqueId());
-            Context.getDataManager().addPosition(position);
-            producer.send(new ProducerRecord<>("positionsTopic", "01", position));
+            if(position.getServerTime() ==null)position.setServerTime(new Date());
+            try {
+                Context.getDataManager().addPosition(position);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            producer.send(new ProducerRecord<>("positionsTopic", position.getImei(), position));
         } catch (Exception error) {
             Log.warning(error);
         }
 
         return position;
     }
-
 }

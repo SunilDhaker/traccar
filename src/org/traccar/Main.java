@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Locale;
-
+import com.mysql.jdbc.*;
 public final class Main {
 
     private static final long CLEAN_PERIOD = 24 * 60 * 60 * 1000;
@@ -53,13 +53,13 @@ public final class Main {
         }, 0, CLEAN_PERIOD);
 
 
-        VTSConsumersThread vtsConsumersThread = new VTSConsumersThread();
-       vtsConsumersThread.start();
+//        VTSConsumersThread vtsConsumersThread = new VTSConsumersThread();
+//       vtsConsumersThread.start();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 Log.info("Shutting down server...");
-                vtsConsumersThread.stop();
+              //  vtsConsumersThread.stop();
                 if (Context.getWebServer() != null) {
                     Context.getWebServer().stop();
                 }

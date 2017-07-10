@@ -16,99 +16,24 @@
 package org.traccar;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.traccar.kafka.SensorReading;
-import org.traccar.kafka.StringProducer;
 import org.traccar.model.Event;
 import org.traccar.model.Position;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.traccar.kafka.serialization.JacksonReadingSerializer;
-import org.traccar.kafka.serialization.StringReadingSerializer;
 
 public abstract class BaseEventHandler extends BaseDataHandler {
 
 
-    public static Producer<String, String> producer;
-
-
     public BaseEventHandler(){
-       if(producer == null) {
-           String serializer2 = StringReadingSerializer.class.getName();
-           Properties properties = new Properties();
-           properties.put("acks", "all");
-           properties.put("retries", 0);
-           properties.put("batch.size", 16384);
-           properties.put("linger.ms", 1);
-           properties.put("buffer.memory", 33554432);
-           properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-           properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-           properties.put("bootstrap.servers", "35.185.162.205:9092");
-           producer = new KafkaProducer<>(properties);
-       }
+
     }
     @Override
     protected Position handlePosition(Position position) {
 
-        System.out.println("In base event handler");
-
-       Collection<Event> events = analyzePosition(position);
-        if (events != null && Context.getNotificationManager() != null) {
-            Context.getNotificationManager().updateEvents(events, position);
-            System.out.println("size of event:"+events.size());
-
-
-            for(Event event: events)
-            {
-                System.out.println(event);
-                System.out.println(event.getType());
-                System.out.println(event.getDeviceId());
-
-
-                switch (event.getType()) {
-                    case "deviceOnline":
-                        producer.send(new ProducerRecord<>("deviceStateTopic", "" +  position.getImei(), "deviceOnline"));
-                        break;
-                    case "deviceOffline":
-                        producer.send(new ProducerRecord<>("deviceStateTopic", "" + position.getImei(), "deviceOffline"));
-                        break;
-                    case "ignitionOn":
-                        producer.send(new ProducerRecord<>("deviceStateTopic","" +  position.getImei(), "ignitionOn"));
-                        break;
-                    case "ignitionOff":
-                        producer.send(new ProducerRecord<>("deviceStateTopic", "" + position.getImei(), "ignitionOff"));
-                        break;
-                    case "deviceStopped":
-                        producer.send(new ProducerRecord<>("deviceMovementTopic","" +  position.getImei(), "deviceStopped"));
-                        break;
-                    case "deviceMoving":
-                        producer.send(new ProducerRecord<>("deviceMovementTopic","" +  position.getImei(), "deviceMoving"));
-                        break;
-                    case "deviceOverspeed":
-                        producer.send(new ProducerRecord<>("deviceMovementTopic", "" + position.getImei(), "deviceOverspeed"));
-                        break;
-                    case "geofenceEnter":
-                        producer.send(new ProducerRecord<>("deviceGeofenceTopic", "" + position.getImei(), "geofenceEnter"));
-                        break;
-                    case "geofenceExit":
-                        producer.send(new ProducerRecord<>("deviceGeofenceTopic","" +  position.getImei(), "geofenceExit"));
-                        break;
-                    default: System.out.println("Unknown Event");
-                        break;
-                }
-                    //Thread.sleep(500);
-            }
-        }
+        Collection<Event> events = analyzePosition(position);
         return position;
     }
     protected abstract Collection<Event> analyzePosition(Position position);

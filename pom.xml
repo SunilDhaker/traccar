@@ -41,6 +41,7 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.40</version> <!-- Version 6 required Java 8 -->
+           <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -239,6 +240,7 @@
                     </archive>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.1</version>
@@ -270,6 +272,19 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                 <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                  <includeProjectDependencies>true</includeProjectDependencies>
+                  <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>org.traccar.Main</mainClass>
+                            <arguments>
+                                <argument>debug.xml</argument>
+                            </arguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>

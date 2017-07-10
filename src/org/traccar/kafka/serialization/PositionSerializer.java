@@ -63,9 +63,10 @@ public class PositionSerializer implements Closeable, AutoCloseable, Serializer<
         try {
             return mapper.readValue(bytes, Position.class);
         }
-        catch(IOException e) {
-            throw new IllegalArgumentException(e);
+        catch(Exception e) {
+           // throw new IllegalArgumentException(e);
         }
+        return null;
     }
 
 

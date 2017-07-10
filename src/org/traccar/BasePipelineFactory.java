@@ -189,6 +189,7 @@ public abstract class BasePipelineFactory implements ChannelPipelineFactory {
             pipeline.addLast("logger", new StandardLoggingHandler());
         }
 
+
         addSpecificHandlers(pipeline);
 
         if (geolocationHandler != null) {
