@@ -59,7 +59,7 @@ public class DefaultDataHandler extends BaseDataHandler {
                 e.printStackTrace();
             }
 
-            producer.send(new ProducerRecord<>("positionsTopic", position.getImei(), position));
+            producer.send(new ProducerRecord<>("positionsTopic",0,position.getDeviceTime().getTime(), position.getImei(), position));
         } catch (Exception error) {
             Log.warning(error);
         }

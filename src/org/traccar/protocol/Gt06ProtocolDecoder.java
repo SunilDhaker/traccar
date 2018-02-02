@@ -33,6 +33,7 @@ import org.traccar.model.Position;
 
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
@@ -109,7 +110,12 @@ public class Gt06ProtocolDecoder extends BaseProtocolDecoder {
         DateBuilder dateBuilder = new DateBuilder(timeZone)
                 .setDate(buf.readUnsignedByte(), buf.readUnsignedByte(), buf.readUnsignedByte())
                 .setTime(buf.readUnsignedByte(), buf.readUnsignedByte(), buf.readUnsignedByte());
-        position.setTime(dateBuilder.getDate());
+
+
+        //because dateBuilder instance return Date(0:00 GMT)
+        Date lastDate = dateBuilder.getDateAtOffset(dateBuilder.getDate() ,timeZone);
+
+        position.setTime(lastDate);
 
         int length = buf.readUnsignedByte();
         position.set(Position.KEY_SATELLITES, BitUtil.to(length, 4));
@@ -230,16 +236,22 @@ public class Gt06ProtocolDecoder extends BaseProtocolDecoder {
             buf.readUnsignedShort(); // type
 
             // Timezone offset
+
+            int offset = 19800;  //default timezone offset set to GMT+5:30
+
             if (dataLength > 10) {
                 int extensionBits = buf.readUnsignedShort();
                 int hours = (extensionBits >> 4) / 100;
                 int minutes = (extensionBits >> 4) % 100;
-                int offset = (hours * 60 + minutes) * 60;
+                 offset = (hours * 60 + minutes) * 60 * 1000;
                 if ((extensionBits & 0x8) != 0) {
                     offset = -offset;
                 }
+
+                //if timeZone not defined for protocol in config file then forceTimeZone always false
                 if (!forceTimeZone) {
-                    timeZone.setRawOffset(offset * 1000);
+                    //place to handle timezone offset
+                    timeZone.setRawOffset(offset);
                 }
             }
 
@@ -265,7 +277,10 @@ public class Gt06ProtocolDecoder extends BaseProtocolDecoder {
                         .setDate(buf.readUnsignedByte(), buf.readUnsignedByte(), buf.readUnsignedByte())
                         .setTime(buf.readUnsignedByte(), buf.readUnsignedByte(), buf.readUnsignedByte());
 
-                getLastLocation(position, dateBuilder.getDate());
+                //because dateBuilder instance return Date(0:00 GMT)
+                Date lastDate = dateBuilder.getDateAtOffset(dateBuilder.getDate() ,timeZone);
+
+                getLastLocation(position, lastDate);
 
                 int mcc = buf.readUnsignedShort();
                 int mnc = buf.readUnsignedByte();

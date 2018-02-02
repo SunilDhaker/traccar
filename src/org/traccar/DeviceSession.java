@@ -21,13 +21,16 @@ public class DeviceSession {
     private final String imei;
 
 
+
     public DeviceSession(long deviceId , String imei) {
         this.deviceId = deviceId;
         this.imei = imei;
     }
 
+
     public long getDeviceId() {
         return deviceId;
     }
+
 
 }

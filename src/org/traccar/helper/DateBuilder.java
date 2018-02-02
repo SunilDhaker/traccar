@@ -123,4 +123,9 @@ public class DateBuilder {
         return calendar.getTime();
     }
 
+
+    public Date getDateAtOffset(Date date ,TimeZone timeOffset){
+        return new Date(date.getTime() + timeOffset.getRawOffset());
+    }
+
 }
