@@ -298,6 +298,16 @@ public class Position extends Message {
 		this.network = network;
 	}
 
+
+	private String decoder;
+
+	public  String getDecoder(){ return  decoder;}
+	public  void  setDecoder(String decoder){
+		this.decoder = decoder;
+	}
+
+
+
 	// public schema.Position toSchema(){
 	// return new schema.Position();
 	//

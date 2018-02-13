@@ -52,6 +52,8 @@ public class DefaultDataHandler extends BaseDataHandler {
 
         try {
             position.setImei(Context.getIdentityManager().getDeviceById(position.getDeviceId()).getUniqueId());
+            position.setDecoder("Concox-traccar");
+
             if(position.getServerTime() ==null)position.setServerTime(new Date());
             try {
                 Context.getDataManager().addPosition(position);
